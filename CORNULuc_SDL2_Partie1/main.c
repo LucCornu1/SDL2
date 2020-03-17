@@ -7,6 +7,7 @@
 #define X_WINDOW 1000
 #define Y_WINDOW 700
 
+//main
 int main(int argc, char *argv[]) //arguments obligatoire pour compiler en SDL
 {
     SDL_Window *pWindow=NULL; //Pointeur sur la fenêtre
@@ -16,7 +17,7 @@ int main(int argc, char *argv[]) //arguments obligatoire pour compiler en SDL
     if(SDL_Init(SDL_INIT_EVERYTHING)>=0) //initialisation de la vidéo, des contrôles, de l'audio, etc.
     {
         //Création de la fenêtre : on associe la création de la fenêtre à une variable pour pouvoir la manipuler
-        pWindow = SDL_CreateWindow("SDL_Partie1",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, X_WINDOW, Y_WINDOW, SDL_WINDOW_BORDERLESS);
+        pWindow = SDL_CreateWindow("SDL_Partie1",SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, X_WINDOW, Y_WINDOW, SDL_WINDOW_SHOWN);
         //SDL_WINDOWPOS_CENTERED permet de centrer la fenêtre dans l'écran de l'utilisateur
         //X_WINDOW et Y_WINDOW sont des constantes déterminant la taille de la fenêtre SDL2
         //SDL_WINDOW_SHOWN précise que la fenêtre doit être affichée

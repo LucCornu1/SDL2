@@ -13,7 +13,15 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include/SDL2" />
 				</Compiler>
+				<Linker>
+					<Add library="libmingw32.a" />
+					<Add library="lib/libSDL2main.a" />
+					<Add library="lib/libSDL2.a" />
+					<Add library="lib/libSDL2.dll.a" />
+					<Add directory="lib" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/CORNULuc_SDL2_Partie1" prefix_auto="1" extension_auto="1" />
