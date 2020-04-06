@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define X_WINDOW 1000
 #define Y_WINDOW 700
@@ -31,28 +32,66 @@ int main(int argc, char *argv[]) //arguments obligatoire pour compiler en SDL
             SDL_RenderPresent(pRenderer);
 
             SDL_Delay(5000);
-              //----------------------------------------------------------------------------//
-            //Création d'une texture à partir d'un PNG
-            SDL_SetRenderTarget(pRenderer, NULL); //redéfinitions de la zone de travail
-            SDL_Surface* pImage = IMG_Load("meth.png");
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+            SDL_SetRenderTarget(pRenderer, NULL);
+            SDL_Surface* pImage = IMG_Load("Char_3.png");
             SDL_Texture* Image = SDL_CreateTextureFromSurface(pRenderer,pImage);
 
             SDL_FreeSurface(pImage);
 
-            if (Image == NULL)
+            if (!Image)
               printf("Erreur de chargement de l'image : %s", pImage);
 
-            SDL_Rect myRect;
-            myRect.x = 0;
-            myRect.y = 0;
-            SDL_QueryTexture(Image, NULL, NULL, &myRect.w, &myRect.h);//Récupère le format de l'image
+            SDL_Rect Rect;
+            Rect.x = 0;
+            Rect.y = 0;
+            SDL_QueryTexture(Image, NULL, NULL, &Rect.w, &Rect.h);
 
-            SDL_RenderCopy(pRenderer, Image, NULL, &myRect);
+            SDL_RenderCopy(pRenderer, Image, NULL, &Rect);
             SDL_RenderPresent(pRenderer);
 
             SDL_Delay(5000);
-            //----------------------------------------------------------------------------//
-        }
+
+            ////////////////////////////////////////////////////////////////////////////////
+
+           SDL_Rect aRect;
+           aRect.x = 0;
+           aRect.y = 0;
+
+           SDL_Surface* aImage = IMG_Load("Char_3.png");
+
+           SDL_RenderClear(pRenderer);
+
+           SDL_Event Evenement;
+
+           int quit = 0;                                                                   //Mise en place d'une condition de sortie via un pseudo bool
+           SDL_Event event;
+
+           while (!quit)
+            {
+                Uint32 ticks = SDL_GetTicks();
+                Uint32 sprite = (ticks / 100) % 4;
+                SDL_QueryTexture(aImage, NULL, NULL, &aRect.w, &aRect.h);  //Appel de la texture créer à partir de l'image
+                aRect.w = aRect.w / 5;          //Division des dimensions pour adapter à la taille de chaque images
+
+                SDL_Rect srcrect = {sprite * aRect.w, 0, aRect.w,  aRect.h};     //Mise en place des rects de source et de réception
+                SDL_Rect dstrect = {0, 0, aRect.w,  aRect.h};
+
+                SDL_PollEvent(&event);
+
+                switch (event.type)
+                {
+                    case SDL_MOUSEBUTTONDOWN :
+                        quit = 1;
+                        break;
+                }
+
+                SDL_RenderClear(pRenderer);
+                SDL_RenderCopy(pRenderer, aImage, &srcrect, &dstrect);
+                SDL_RenderPresent(pRenderer);
+            }
 
         SDL_DestroyWindow(pWindow); //On supprime la fenêtre
         SDL_Quit(); //On quitte SDL2
