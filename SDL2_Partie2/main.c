@@ -12,7 +12,7 @@
 
 const int FPS=1;
 
-void Afficher(SDL_Renderer* pRenderer, SDL_Texture* textuTil, char** table, int nombre_blocs_largeur, int nombre_blocs_hauteur,int xBase);
+void Afficher(SDL_Renderer*, SDL_Texture*, char**, int, int, int, int);
 
 int main(int argc, char *argv[])
 {
@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
             //Tilemapping
 
             char* table[] = {
+            	"000000000000000000000000000000",
+                "000000000000000000000000000000",
+                "000000000000000000000000000000",
+                "000022222221111111122222220000",
                 "000000000000000000000000000000",
                 "000000000000000000000000000000",
                 "000000000000000000000000000000",
@@ -53,6 +57,7 @@ int main(int argc, char *argv[])
             unsigned long int nTempsPrecedent=0;
             int nDeltaTime = div(1000,FPS).quot;
             int xBase = 0;
+            int yBase = 0;
 
             SDL_Surface *tileset = NULL;
             SDL_Texture *textuTil = NULL;
@@ -74,8 +79,7 @@ int main(int argc, char *argv[])
             }
             SDL_FreeSurface(tileset);
 
-            Afficher(pRenderer, textuTil, table, NOMBRE_BLOCS_LARGEUR, NOMBRE_BLOCS_HAUTEUR,0);
-            int sens = -1;
+            Afficher(pRenderer, textuTil, table, NOMBRE_BLOCS_LARGEUR, NOMBRE_BLOCS_HAUTEUR,0,0);
             while(continuer)
             {
                 SDL_PollEvent(&event);
@@ -91,22 +95,35 @@ int main(int argc, char *argv[])
                             case SDLK_ESCAPE:
                                 continuer = 0;
                                 break;
+
+                            //Gestion des touches
+                            case SDLK_d:
+                            	if(xBase < NOMBRE_BLOCS_LARGEUR) //Si l'utilisateur appuie sur la touche d ET qu'il n'arrive pas en bout de tableau
+                            		xBase = xBase + 1; //Alors il avance d'un block vers la droite
+                            	break;
+
+                            case SDLK_q:
+                            	if(xBase > 0) //Si l'utilisateur appuie sur la touche q ET qu'il n'arrive pas en bout de tableau
+                            		xBase = xBase - 1; //Alors il avance d'un block vers la gauche
+                            	break;
+
+                            case SDLK_s:
+                            	if(yBase < 4) //Si l'utilisateur appuie sur la touche s ET qu'il n'arrive pas en bout de tableau
+                            		yBase = yBase + 1; //Alors il avance d'un block vers le bas
+                            	break;
+
+                            case SDLK_z:
+                            	if(yBase > 0) //Si l'utilisateur appuie sur la touche z ET qu'il n'arrive pas en bout de tableau
+                            		yBase = yBase - 1; //Alors il avance d'un block vers le haut
+                            	break;
                         }
                         break;
                 }
 
                 nTempsActuel = SDL_GetTicks();
-                if (nTempsActuel > nTempsPrecedent + nDeltaTime)  //On effectue l'affichage à chaque frame.
+                if (nTempsActuel > nTempsPrecedent + nDeltaTime) //On effectue l'affichage à chaque frame.
                 {
-                	if (xBase == NOMBRE_BLOCS_LARGEUR || xBase == 0)
-                		sens *= -1; //Si on arrive à l'origine = 0 ou au maximum (ici qui correspond à NOMBRE_BLOCS_LARGEUR) on inverse le sens
-
-                	if(sens == 1)
-                		xBase++; //Si le sens est positif, alors on avance
-                	else
-                		xBase--; //Si le sens est négatif, alors on recul
-
-                    Afficher(pRenderer, textuTil, table, NOMBRE_BLOCS_LARGEUR, NOMBRE_BLOCS_HAUTEUR,xBase);
+                    Afficher(pRenderer, textuTil, table, NOMBRE_BLOCS_LARGEUR, NOMBRE_BLOCS_HAUTEUR, xBase, yBase);
                     nTempsPrecedent = nTempsActuel;
                 }
 
@@ -126,7 +143,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void Afficher(SDL_Renderer* pRenderer, SDL_Texture* textuTil, char** table, int nombre_blocs_largeur, int nombre_blocs_hauteur,int iBase)
+void Afficher(SDL_Renderer* pRenderer, SDL_Texture* textuTil, char** table, int nombre_blocs_largeur, int nombre_blocs_hauteur,int iBase, int jBase)
 //But : Afficher la tilemap
 //Entree : le Renderer, une texture, la tilemap, la largeur, la hauteur et le minimum i à afficher
 //Sortie : rien (mais "colle" la tilemap)
@@ -140,10 +157,10 @@ void Afficher(SDL_Renderer* pRenderer, SDL_Texture* textuTil, char** table, int 
     Rect_dest.h = HAUTEUR_TILE;
     for(i = iBase ; i < NOMBRE_BLOCS_LARGEUR + iBase; i++) //On commence à i = x pour arriver à NOMBRE_BLOCS_LARGEUR + x
     {
-        for(j = 0 ; j < NOMBRE_BLOCS_HAUTEUR; j++)
+        for(j = jBase ; j < NOMBRE_BLOCS_HAUTEUR + jBase; j++)
         {
             Rect_dest.x = (i - iBase) * LARGEUR_TILE;
-            Rect_dest.y = j * HAUTEUR_TILE;
+            Rect_dest.y = (j - jBase) * HAUTEUR_TILE;
             Rect_source.x = (table[j][i] - '0') * LARGEUR_TILE;
             Rect_source.y = 0;
             SDL_RenderCopy(pRenderer, textuTil, &Rect_source, &Rect_dest);
